@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vehicle Custody Report</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f4f5f7;--card:#fff;--tx:#1b1f24;--mut:#5b6570;--bd:#d5d9df;--ac:#0b5cad;--acx:#fff}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mut:#9aa4af;--bd:#343b44;--ac:#5aa2ee;--acx:#0a0f14;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mut:#9aa4af;--bd:#343b44;--ac:#5aa2ee;--acx:#0a0f14;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:12px}
+h1{font-size:20px;margin:6px 0 2px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;color:var(--ac)}
+.sub{color:var(--mut);font-size:13px;margin:0 0 12px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.g{grid-template-columns:1fr}}
+.f{display:flex;flex-direction:column;gap:3px}.full{grid-column:1/-1}
+label{font-size:12px;color:var(--mut)}
+input,textarea,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:8px;width:100%}
+textarea{min-height:70px;resize:vertical}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:8px 0;font-size:13px}
+.chk input{width:auto;margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips label{display:flex;gap:5px;align-items:center;border:1px solid var(--bd);border-radius:16px;padding:5px 10px;color:var(--tx);font-size:13px}
+.chips input{width:auto}
+canvas{width:100%;height:150px;background:#fff;border:1px dashed var(--bd);border-radius:6px;touch-action:none;display:block}
+button{font:inherit;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:8px;padding:9px 14px;cursor:pointer}
+button.p{background:var(--ac);color:var(--acx);border-color:var(--ac);font-weight:600;width:100%;padding:13px;font-size:16px}
+.ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:10px}
+.ph div{position:relative}.ph img{width:100%;height:110px;object-fit:cover;border-radius:6px;border:1px solid var(--bd)}
+.ph b{position:absolute;top:3px;right:3px;background:#000a;color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;cursor:pointer;font-size:14px}
+.msg{color:#c0392b;font-size:13px;margin:6px 0;min-height:18px}
+.sig img{max-height:90px;display:none}
+@page{size:A4;margin:8mm}
+@media print{
+:root{--bg:#fff;--card:#fff;--tx:#000;--mut:#444;--bd:#999;--ac:#000;color-scheme:light;padding:0}
+body{font-size:10.5px;line-height:1.4;background:#fff}.wrap{max-width:none;padding:0}.noprint,.ph b,.sub{display:none!important}
+h1{font-size:15px;border-bottom:2px solid #000;padding-bottom:3px;margin:0 0 5px}
+h2{font-size:10px;margin:0 0 4px;color:#000;border-bottom:1px solid #999}
+section{break-inside:avoid;border:1px solid #999;border-radius:0;padding:7px 8px;margin-bottom:6px}
+.g{grid-template-columns:repeat(4,1fr);gap:3px 8px}.full{grid-column:span 4}
+label{font-size:8px}
+input,textarea,select{border:0;border-bottom:1px solid #bbb;border-radius:0;background:#fff;padding:1px 0;font-size:9.5px;appearance:none;-webkit-appearance:none}
+textarea{min-height:24px;resize:none}
+.chips label{border:0;padding:0 6px 0 0;font-size:9px}
+#dis{columns:2;column-gap:12px}.chk{margin:3px 0;font-size:9px;break-inside:avoid}
+canvas.cv{display:none}.sig img.out{display:block;width:100%;height:95px;object-fit:contain;border-bottom:1px solid #000;background:#fff;margin-top:4px}
+.sig .g{grid-template-columns:1fr 1fr}
+.ph{grid-template-columns:repeat(3,1fr);gap:6px}.ph div{break-inside:avoid}.ph img{height:150px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1 id="ttl">VEHICLE CUSTODY / CONDITION REPORT</h1>
+<p class="sub">Fill at pick-up. Customer signs. Tap “Generate PDF” at the end.</p>
+
+<section><h2>Report details</h2><div class="g">
+<div class="f"><label>Company / service provider</label><input id="co" value="Allianz RSA Partner GO For Cab Premium / Safe Travels" readonly></div>
+<div class="f"><label>Assignment no.</label><input id="ano"></div>
+<div class="f"><label>Date</label><input id="dt" type="date"></div>
+<div class="f"><label>Driver / custody person name</label><input id="drv"></div>
+<div class="f"><label>Driver phone</label><input id="drvp" type="tel"></div>
+<div class="f"><label>Inspection condition</label><select id="lt"><option>Daylight</option><option>Night / artificial light</option><option>Rain</option></select></div>
+</div></section>
+
+<section><h2>Customer</h2><div class="g">
+<div class="f"><label>Customer name</label><input id="cn"></div>
+<div class="f"><label>Customer phone</label><input id="cp" type="tel"></div>
+<div class="f full"><label>Event location (where vehicle is picked up)</label><input id="loc"></div>
+<div class="f full"><label>Destination (workshop / yard)</label><input id="dest"></div>
+</div></section>
+
+<section><h2>Vehicle</h2><div class="g">
+<div class="f"><label>Vehicle no. *</label><input id="vno" style="text-transform:uppercase" placeholder="MP09AB1234"></div>
+<div class="f"><label>Vehicle brand / model</label><input id="vb" placeholder="Kia Seltos"></div>
+<div class="f"><label>Mileage (km)</label><input id="km" inputmode="numeric"></div>
+<div class="f"><label>Fuel level</label><select id="fu"><option>Empty</option><option>1/4</option><option>1/2</option><option>3/4</option><option>Full</option></select></div>
+</div></section>
+
+<section><h2>Timings</h2><div class="g">
+<div class="f"><label>Time received</label><input id="t1" type="time"></div>
+<div class="f"><label>Time on scene</label><input id="t2" type="time"></div>
+<div class="f"><label>Time departed scene</label><input id="t3" type="time"></div>
+<div class="f"><label>Time delivered</label><input id="t4" type="time"></div>
+</div></section>
+
+<section><h2>Reported problem &amp; work carried out</h2>
+<textarea id="prob" placeholder="Breakdown details, work done, special instructions"></textarea></section>
+
+<section><h2>Vehicle condition</h2>
+<label>Existing damage / marks (tick all that apply)</label>
+<div class="chips" id="dmg"></div>
+<div class="g" style="margin-top:10px">
+<div class="f"><label>Exterior</label><select id="ext"><option>Clean</option><option>Soiled</option></select></div>
+<div class="f"><label>Interior</label><select id="int"><option>Clean</option><option>Soiled</option></select></div>
+<div class="f full"><label>Damage notes (location, scratch, dent, missing items, warning lights…)</label><textarea id="dn"></textarea></div>
+</div>
+<div class="noprint" style="margin-top:10px"><label>Add vehicle photos (front, rear, sides, interior, odometer)</label>
+<input id="pf" type="file" accept="image/*" multiple></div>
+<div class="ph" id="ph"></div></section>
+
+<section><h2>Customer acknowledgement &amp; disclaimers</h2>
+<div id="dis"></div></section>
+
+<section class="sig"><h2>Signatures</h2><div class="g">
+<div><label>Driver / custody person signature</label><canvas class="cv" id="s1" width="600" height="200"></canvas><img class="out" id="o1" alt=""><button class="noprint" onclick="clr(1)" style="margin-top:6px">Clear</button></div>
+<div><label>Customer signature</label><canvas class="cv" id="s2" width="600" height="200"></canvas><img class="out" id="o2" alt=""><button class="noprint" onclick="clr(2)" style="margin-top:6px">Clear</button><div style="font-size:12px;margin-top:4px" id="cnm"></div></div>
+</div></section>
+
+<div class="noprint"><div class="msg" id="msg"></div>
+<button class="p" onclick="gen()">Generate PDF</button>
+<p class="sub" style="margin-top:8px">In the print window choose “Save as PDF” as the destination, then share the file by WhatsApp or email.</p></div>
+</div>
+
+<script>
+var D=["Front bumper","Rear bumper","Bonnet","Roof","Left side","Right side","Windshield","Tyres / wheels","Mirrors","Lights","Interior / seats"];
+var T=[
+["Custody consent","I am the owner / authorised driver and I hand over this vehicle to the service provider for towing/transport/safekeeping. I confirm the vehicle details above are correct."],
+["Condition acknowledgement","I confirm existing marks/damage were marked and pointed out to me before handover. This is a pre-inspection report; a detailed inspection will be done at the service centre, and it does not imply there are no other faults."],
+["Advised not to drive","I have been advised not to drive this vehicle until examined by an authorised repairer and accept responsibility for damage or injury if I do."],
+["Towing / temporary repair","I authorise towing/recovery of the vehicle. Any repair done is temporary and a permanent repair must be completed at the earliest."],
+["Valuables","I have removed all valuable items from the vehicle."],
+["Data consent","I agree my details may be shared with repairers and authorities for the service."]];
+var $=function(i){return document.getElementById(i)};
+function sv(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function ld(k){try{return localStorage.getItem(k)||""}catch(e){return ""}}
+$("dmg").innerHTML=D.map(function(d,i){return '<label><input type="checkbox" class="dm" value="'+d+'">'+d+'</label>'}).join("");
+$("dis").innerHTML=T.map(function(t,i){return '<div class="chk"><input type="checkbox" class="dc" id="d'+i+'"><div><b>'+t[0]+'</b><br>'+t[1]+'</div></div>'}).join("");
+var n=new Date();$("dt").value=n.toISOString().slice(0,10);
+$("ano").value="CU"+n.getFullYear().toString().slice(2)+("0"+(n.getMonth()+1)).slice(-2)+("0"+n.getDate()).slice(-2)+Math.floor(1000+Math.random()*9000);
+$("co").value="Allianz RSA Partner GO For Cab Premium / Safe Travels";$("drv").value=ld("drv");$("drvp").value=ld("drvp");
+$("cn").oninput=function(){$("cnm").textContent=this.value};
+/* photos */
+var P=[];
+function rp(){$("ph").innerHTML=P.map(function(s,i){return '<div><img src="'+s+'" alt="photo"><b class="noprint" onclick="P.splice('+i+',1);rp()">×</b></div>'}).join("")}
+$("pf").onchange=function(e){Array.prototype.forEach.call(e.target.files,function(f){var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var m=900,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);P.push(c.toDataURL("image/jpeg",.72));rp()};im.src=r.result};r.readAsDataURL(f)});e.target.value=""};
+/* signatures */
+var inked={1:false,2:false};
+function pad(id,k){var c=$(id),x=c.getContext("2d"),dr=false;x.lineWidth=3;x.lineCap="round";x.strokeStyle="#000";
+function p(e){var r=c.getBoundingClientRect();return[(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
+c.onpointerdown=function(e){dr=true;c.setPointerCapture(e.pointerId);var q=p(e);x.beginPath();x.moveTo(q[0],q[1]);inked[k]=true;e.preventDefault()};
+c.onpointermove=function(e){if(!dr)return;var q=p(e);x.lineTo(q[0],q[1]);x.stroke()};
+c.onpointerup=c.onpointercancel=function(){dr=false}}
+pad("s1",1);pad("s2",2);
+function clr(k){var c=$("s"+k);c.getContext("2d").clearRect(0,0,c.width,c.height);inked[k]=false}
+/* generate */
+function gen(){
+var m=[];
+if(!$("vno").value.trim())m.push("vehicle number");
+if(!$("cn").value.trim())m.push("customer name");
+if(!inked[2])m.push("customer signature");
+if(!inked[1])m.push("driver signature");
+var un=Array.prototype.some.call(document.querySelectorAll(".dc"),function(c){return !c.checked});
+if(un)m.push("all disclaimers ticked");
+if(m.length){$("msg").textContent="Please complete: "+m.join(", ");return}
+$("msg").textContent="";
+["prob","dn"].forEach(function(i){var t=$(i);t.style.height="auto";t.style.height=Math.max(24,t.scrollHeight)+"px"});
+sv("drv",$("drv").value);sv("drvp",$("drvp").value);
+[1,2].forEach(function(k){$("o"+k).src=$("s"+k).toDataURL("image/png")});
+var dm=Array.prototype.filter.call(document.querySelectorAll(".dm"),function(c){return c.checked}).map(function(c){return c.value});
+document.title="Custody_"+$("vno").value.trim().toUpperCase()+"_"+$("dt").value;
+$("ttl").textContent=($("co").value?$("co").value+" — ":"")+"VEHICLE CUSTODY / CONDITION REPORT";
+if(dm.length&&!$("dn").value.trim().startsWith("Marked:"))$("dn").value="Marked: "+dm.join(", ")+($("dn").value?". "+$("dn").value:"");
+setTimeout(function(){window.print()},150)}
+</script>
+</body>
+</html>
